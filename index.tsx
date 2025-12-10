@@ -1,9 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 
+// --- Type Definitions ---
+type Menu = {
+  id: number;
+  title: string;
+  price: string;
+  description: string;
+  time: string;
+};
+
+type Stylist = {
+  id: number;
+  name: string;
+  role: string;
+  image: string;
+  message: string;
+  specialties: string[];
+};
+
+type Review = {
+  id: number;
+  name: string;
+  rating: number;
+  comment: string;
+};
+
+type Faq = {
+  id: number;
+  question: string;
+  answer: string;
+};
+
+
 // --- Data Definitions ---
 
-const MENUS = [
+const MENUS: Menu[] = [
   { id: 1, title: 'カット + カラー', price: '¥12,100', description: '骨格に合わせた似合わせカットと、透明感のあるカラー。', time: '120分' },
   { id: 2, title: 'カット + パーマ', price: '¥13,200', description: 'ダメージレスな薬剤で、柔らかい質感のカールを実現します。', time: '150分' },
   { id: 3, title: 'カット + トリートメント', price: '¥9,900', description: '髪の内部から補修し、ツヤとまとまりを与えます。', time: '90分' },
@@ -12,26 +44,26 @@ const MENUS = [
   { id: 6, title: 'メンズカット', price: '¥5,500', description: 'ビジネスからカジュアルまで、清潔感のあるスタイルを提案。', time: '60分' },
 ];
 
-const STYLISTS = [
+const STYLISTS: Stylist[] = [
   { id: 1, name: 'Sakura Tanaka', role: 'Top Stylist', image: 'https://images.unsplash.com/photo-1595240277861-55db29b007cb?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', message: '「なりたい」を叶えます。毎日のスタイリングが楽しくなる提案を。', specialties: ['ショートボブ', '透明感カラー'] },
   { id: 2, name: 'Kenji Sato', role: 'Director', image: 'https://images.unsplash.com/photo-1616703541604-0610f639207e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', message: '髪質改善はお任せください。あなたの髪の悩みを魅力に変えます。', specialties: ['髪質改善', 'メンズカット'] },
   { id: 3, name: 'Yui Suzuki', role: 'Stylist', image: 'https://images.unsplash.com/photo-1583995627255-e9b4625b0853?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80', message: 'トレンドを取り入れた、ナチュラルで可愛いスタイルが得意です。', specialties: ['アレンジ', 'ハイライト'] },
 ];
 
-const REVIEWS = [
+const REVIEWS: Review[] = [
   { id: 1, name: 'M.K 様 (30代女性)', rating: 5, comment: '初めて伺いましたが、丁寧なカウンセリングで安心してお任せできました。カラーの色味も理想通りで大満足です！' },
   { id: 2, name: 'S.T 様 (20代女性)', rating: 5, comment: '店内の雰囲気がとても良く、リラックスして過ごせました。トリートメントで髪が生き返りました。また来ます。' },
   { id: 3, name: 'Y.O 様 (40代男性)', rating: 4, comment: 'メンズカットが得意な美容室を探していました。セットの仕方も丁寧に教えてくれて助かりました。' },
 ];
 
-const FAQS = [
+const FAQS: Faq[] = [
   { id: 1, question: '予約は必要ですか？', answer: 'はい、当サロンは完全予約制となっております。Web予約、またはお電話にてご予約をお願いいたします。' },
   { id: 2, question: '駐車場はありますか？', answer: '店舗前に3台分の駐車スペースをご用意しております。' },
   { id: 3, question: 'クレジットカードは使えますか？', answer: 'VISA, MasterCard, JCB, Amex, Diners がご利用いただけます。また、PayPayなどのQR決済も可能です。' },
   { id: 4, question: '子供連れでも大丈夫ですか？', answer: 'はい、個室もご用意しておりますので、お子様連れでも気兼ねなくご来店ください（要事前予約）。' },
 ];
 
-const GALLERY_IMAGES = [
+const GALLERY_IMAGES: string[] = [
   'https://images.unsplash.com/photo-1582095133179-bfd08d34a832?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
   'https://images.unsplash.com/photo-1562547256-2c5eece99d48?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
   'https://images.unsplash.com/photo-1533596919106-9635b7b1349f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80',
@@ -42,7 +74,8 @@ const GALLERY_IMAGES = [
 
 // --- Components ---
 
-const SectionTitle = ({ title, subtitle }: { title: string; subtitle: string }) => (
+type SectionTitleProps = { title: string; subtitle: string };
+const SectionTitle = ({ title, subtitle }: SectionTitleProps) => (
   <div className="text-center mb-12">
     <h2 className="text-3xl font-serif text-stone-800 mb-2 tracking-wide">{title}</h2>
     <p className="text-stone-500 text-sm tracking-wider uppercase">{subtitle}</p>
@@ -50,7 +83,12 @@ const SectionTitle = ({ title, subtitle }: { title: string; subtitle: string }) 
   </div>
 );
 
-const Button = ({ children, primary = false, className = '', ...props }: any) => (
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  primary?: boolean;
+  className?: string;
+  children: React.ReactNode;
+};
+const Button = ({ children, primary = false, className = '', ...props }: ButtonProps) => (
   <button
     className={`px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105 ${
       primary
@@ -175,29 +213,33 @@ const Hero = () => (
     <div className="absolute inset-0 z-0">
       <img
         src="https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
-        alt="Salon Interior"
+        alt="落ち着いた雰囲気の美容室店内の写真"
         className="w-full h-full object-cover brightness-75"
+        loading="eager"
       />
     </div>
-    <div className="relative z-10 text-center text-white px-6 mt-16">
+    <div className="relative z-10 text-center text-white px-4 sm:px-6 mt-16">
       <FadeIn>
-        <p className="text-lg md:text-xl mb-4 tracking-[0.2em] uppercase opacity-90">Private Hair Salon</p>
-        <h2 className="text-4xl md:text-6xl lg:text-7xl font-serif mb-8 leading-tight">
+        <p className="text-base sm:text-lg md:text-xl mb-3 sm:mb-4 tracking-[0.2em] uppercase opacity-90">Private Hair Salon</p>
+        <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-serif mb-6 sm:mb-8 leading-tight drop-shadow-lg">
           日常に、<br className="md:hidden" />洗練された輝きを。
-        </h2>
-        <div className="flex flex-col md:flex-row gap-4 justify-center">
-          <Button className="bg-white text-stone-900 hover:bg-stone-200 min-w-[200px] border-none shadow-lg">
-            予約する
-          </Button>
-          <Button className="bg-white text-stone-900 hover:bg-stone-200 min-w-[200px] border-none shadow-lg">
-            メニューを見る
-          </Button>
+        </h1>
+        <div className="flex flex-col md:flex-row gap-3 sm:gap-4 justify-center">
+          <a href="#access" aria-label="Web予約セクションへ移動" className="focus:outline-none">
+            <Button className="bg-white text-stone-900 hover:bg-stone-200 min-w-[180px] sm:min-w-[200px] border-none shadow-lg font-semibold text-base sm:text-lg" primary>
+              予約する
+            </Button>
+          </a>
+          <a href="#menu" aria-label="メニューセクションへ移動" className="focus:outline-none">
+            <Button className="bg-white text-stone-900 hover:bg-stone-200 min-w-[180px] sm:min-w-[200px] border-none shadow-lg font-semibold text-base sm:text-lg">
+              メニューを見る
+            </Button>
+          </a>
         </div>
       </FadeIn>
     </div>
-    
     <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce text-white/70">
-      <i className="fas fa-chevron-down text-2xl"></i>
+      <i className="fas fa-chevron-down text-2xl" aria-hidden="true"></i>
     </div>
   </section>
 );
@@ -329,7 +371,7 @@ const Gallery = () => (
       
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {GALLERY_IMAGES.map((img, idx) => (
-          <FadeIn key={idx} delay={idx * 50}>
+          <FadeIn key={img} delay={idx * 50}>
             <div className="aspect-square overflow-hidden rounded-lg group relative cursor-pointer">
               <img src={img} alt="Style" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
               <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -341,8 +383,8 @@ const Gallery = () => (
       </div>
       
       <div className="text-center mt-12">
-        <a href="#" className="inline-flex items-center gap-2 text-stone-600 hover:text-stone-900 transition-colors">
-          <i className="fab fa-instagram text-xl"></i>
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-stone-600 hover:text-stone-900 transition-colors" aria-label="Instagramでもっと見る">
+          <i className="fab fa-instagram text-xl" aria-hidden="true"></i>
           <span>Instagramでもっと見る</span>
         </a>
       </div>
@@ -366,8 +408,8 @@ const Review = () => (
                  <div className="text-center">
                    <p className="font-bold text-sm text-stone-800">{review.name}</p>
                    <div className="text-yellow-400 text-xs mt-1">
-                     {[...Array(5)].map((_, i) => (
-                       <i key={i} className={`fas fa-star ${i < review.rating ? '' : 'text-stone-300'}`}></i>
+                     {new Array(5).fill(null).map((_, i) => (
+                       <i key={`${review.id}-star-${i}`} className={`fas fa-star ${i < review.rating ? '' : 'text-stone-300'}`}></i>
                      ))}
                    </div>
                  </div>
@@ -384,14 +426,13 @@ const Review = () => (
   </section>
 );
 
-const FAQ = () => {
+const Faq = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
     <section className="py-24 bg-white">
       <div className="container mx-auto px-6 max-w-3xl">
         <SectionTitle title="Q & A" subtitle="よくある質問" />
-        
         <div className="space-y-4">
           {FAQS.map((faq, idx) => (
             <FadeIn key={faq.id} delay={idx * 50}>
@@ -465,6 +506,7 @@ const Access = () => (
             style={{ border: 0 }}
             allowFullScreen
             loading="lazy"
+            title="Googleマップ - Lumière Hair Salon アクセス"
           ></iframe>
         </div>
       </div>
@@ -476,9 +518,15 @@ const Footer = () => (
   <footer className="bg-stone-900 text-stone-500 py-12 border-t border-stone-800 text-center text-xs">
     <div className="container mx-auto px-6">
       <div className="flex justify-center gap-6 mb-8">
-        <a href="#" className="hover:text-white transition-colors"><i className="fab fa-instagram text-xl"></i></a>
-        <a href="#" className="hover:text-white transition-colors"><i className="fab fa-twitter text-xl"></i></a>
-        <a href="#" className="hover:text-white transition-colors"><i className="fab fa-tiktok text-xl"></i></a>
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" aria-label="Instagram">
+          <i className="fab fa-instagram text-xl" aria-hidden="true"></i>
+        </a>
+        <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" aria-label="Twitter">
+          <i className="fab fa-twitter text-xl" aria-hidden="true"></i>
+        </a>
+        <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" aria-label="TikTok">
+          <i className="fab fa-tiktok text-xl" aria-hidden="true"></i>
+        </a>
       </div>
       <p>&copy; 2024 Lumière Hair Salon. All Rights Reserved.</p>
     </div>
@@ -498,7 +546,7 @@ const App = () => {
         <Stylist />
         <Gallery />
         <Review />
-        <FAQ />
+        <Faq />
         <Access />
       </main>
       <Footer />
@@ -513,5 +561,5 @@ const App = () => {
   );
 };
 
-const root = createRoot(document.getElementById('root')!);
+const root = createRoot(document.getElementById('root'));
 root.render(<App />);
